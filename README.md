@@ -1,46 +1,73 @@
-# Getting Started with Create React App
+# React×TypeScriptでECサイトを作成する
+[日本一わかりやすいReact-Redux入門](https://www.youtube.com/watch?v=FBMA34gUsgw&list=PLX8Rsrpnn3IWavNOj3n4Vypzwb3q1RXhr&index=1)
+こちらの講座をTypeScriptに置き換えて実装
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 事前準備
+1. `npx creat-react-app [プロジェクト名] --template typescript`
+2. firebaseプロジェクト作成
+3. reactのディレクトリから`firebase login`(過去にログインしている場合は必要なかった)
+4. `firebase init`
+- 使用するサービスを選択(Firestore,Functions,Hosting,Strage)
+- Firestore.rulesとFirestore.indexesはデフォルト
+- use to write Cloud Functions? → **TypeScript**
+- ESlint → **y**
+- What do you want to use as your public directory? → **build**
+- single-page appz? → **y**
+- automatic builds and deploys with GitHub? → n
+- What file should used for Strage Rules? → デフォルト
+5. [こちらのサイト](https://qiita.com/sunnyG/items/05c2e9381d6ba2d9fccf)でprettierとかtsconfig.jsonの設定をした
+- lint-staged<br>
+  拡張子が`ts`または`tsx`の場合に`prettier`を走らせてから`git add`する設定を`package.json`に追記
+  ```json
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ]
+  }
+  ```
+- husky<br>
+`precommit`時に上記の`lint-staged`が実行されるように`package.json`に追記
+  ```json
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+  ```
+- prettier<br>
+コードフォーマット関連の設定。`package.json`に記述する
+  ```json
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "tabWidtj": 2,
+    "trailingComma": "all"
+  }
+  ```
+6. 必要なモジュールのインストール
+    ```
+    npm install --save @material-ui/core @material-ui/icons @material-ui/styles connected-react-router firebase history react-redux react-router redux redux-actions redux-logger redux-thunk reselect
+    // コレに加えて型定義ファイルもnpm installした
+    ```
+7.いったんビルド、デプロイ<br>
+`npm run build`実行<br>
+`firebase deploy`実行
 
-## Available Scripts
+## 注意
+`npx create-react-app`は最新版をインストールするため注意。react17はjsx記法だけならimport Reactが不要だったり、typescriptが追いついていなく、tsconfig.jsonの設定が勝手に書き換わったりする。
+<br>
+functionsフォルダにもtsconfig.jsonがある
 
-In the project directory, you can run:
 
-### `npm start`
+## エラー
+- *ESLint couldn't find the config "react-app/jest" to extend from. Please check that the name of the config is correct.*<br>
+ESLintの設定が競合している。`firebase init`している場合functionsフォルダ内にも`eslintrc.js`が生成され。
+PJフォルダ内に複数のESLintファイルが存在することが原因<br>
+package.jsonとfunctions/eslintrc.jsに対して以下を追記
+  ```
+  "root": true
+  ```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- fireabse deploy後tscでいっぱいエラーが出る
+tscのオプションに`--skipLibCheck`を付加<br>
+tsconfig.jsonに`"skipLibCheck": true`を追記
