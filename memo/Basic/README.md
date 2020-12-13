@@ -1,0 +1,144 @@
+# 0. 何故Reduxを使うのか？
+- stateの見通しを良くする
+- どこからでもstateを参照/更新可能にするため
+- モジュール同士を疎結合にするため(⇄密結合)
+
+## 0.1 Storeを用いる
+**Store**→プロジェクト内全体のグローバルstate<br>
+component同士のstateのバケツリレーをやめることができる。
+
+# 1. Fluxフローとは
+- Reduxの設計思想の根本である考え方
+- データが常に１方向に流れる
+- イベント駆動（イベント発生によってデータが変更）
+- Fluxの思想をReactの状態管理に適用したライブラリが**Redux**
+
+# 2. Actionsをつくる
+- Viewからの要求を受けてStoreに変更を依頼する
+- アプリからStoreへデータを送るための**payload**を渡す役割
+- (Redux thunkを使用する前提)
+
+## 2.1 何故Actionsを使うのか
+- Actionsには純粋に受け取ったデータの転送を記述する
+- 受け渡すデータをどう扱うかはReducersの役割
+
+## 2.2  Actionsを書く
+① Action typeを定義してexportする<br>
+② typeとpayloadを記述 **payloadはプレーンなオブジェクトを返す**
+```typescript
+// ①
+export const SIGN_IN = "SIGN_IN";
+export const signInAction = (userState: any): UserActionsFormat => {
+  // ②
+  return {
+    type: "SIGN_IN",
+    payload: {
+      isSignedIn: true,
+      uid: userState.name,
+      userName: userState.username
+    }
+  }
+};
+```
+
+# 3. Reducersをつくる
+- Actionsからデータを受け取りStoreのstateをどう変更するか管理
+- Store内のstateの状態管理人 
+
+## 3.1 initialStateをかく
+- ReducersはStoreの初期状態と現在の状態を知っている
+- この**初期状態**(initialState)をReducers作成前に作る
+　reducks/store/initialState.tsを作成   
+- Storeに必要なstateを全て記述しexportしておく
+```typescript
+const initialState = {
+  users: {
+    isSignedIn: false,
+    uid: "",
+    userName: ""
+  }
+}
+export default initialState
+```
+## 3.2 Reducersをかく
+- reducks/users/reducers.tsを作成
+- Reducersにデータを渡す場合必ず 元のデータ＋新しいデータのデータを渡す
+```typescript
+import * as Actions from './actions'
+import InitialState from './store/initialState'
+
+export const UsersReducers = (state: any = initialState.users, action: Actions.UserActionsFormat) => {
+  switch(action.type) {
+    case Actions.SIGN_IN:
+      // spread syntax
+      // stateとaction.payloadで重複する部分は
+      // action.payloadの方で上書きされる。
+      return {
+        ...state,
+        ...action.payload
+      }
+    case Actions.SIGN_OUT:
+      return false;
+  }
+}
+```
+
+# ４.　Store(Redux)とReactを接続する
+
+## 4.1 Storeをつくる
+`reducks/store/store.ts`へ記述
+### 4.1.1 モジュール
+```typescript
+import {
+  createStore as reduxCreateStore,
+  combineReducers,
+} from 'redux'
+// Import Reducers
+import {ProductsReducer} from '../products/reducers';
+import {UsersReducer} from '../users/reducers';
+```
+
+### 4.1.2 関数
+```ts
+export default function createStore() {
+  return reduxCreateStore(
+    // Reducerを纏めて現在のそれぞれのstateを取得する
+    combineReducers({
+      products: ProductsReducer,
+      users: UsersReducer,
+    })
+  )
+```
+
+## 4.2 StoreとReducersの関連付け
+- src/index.tsxへ追加
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {Provider} from 'react-redux' // ★
+import createStore from './reducks/store/store' // ★
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+// Storeの情報を格納
+export const store = createStore(); // ★
+ReactDOM.render(
+  // Appの中でStoreの情報を参照できる
+  <Provider store={store}> // ★
+    <App />
+  </Provider>, // ★
+  document.getElementById('root')
+);
+```
+Appコンポーネント内から以下でStoreを操作できる<br>
+useSelector: Store内のデータの取得<br>
+useDispatch: Store内のデータの書き換え<br>
+
+## 4.3 Storeへルーティング設定する(MiddleWare導入)
+**ルーティング用ライブラリ**
+1. react-router v4移行
+    Reactのルーティング用ライブラリ
+
+2. connected-react-router
+    ReduxのStoreでルーティングを管理
+    react-router v4 & v5 と互換性がある

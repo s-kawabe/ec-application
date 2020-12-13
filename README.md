@@ -49,13 +49,13 @@
     npm install --save @material-ui/core @material-ui/icons @material-ui/styles connected-react-router firebase history react-redux react-router redux redux-actions redux-logger redux-thunk reselect
     // コレに加えて型定義ファイルもnpm installした
     ```
-7.いったんビルド、デプロイ<br>
-`npm run build`実行<br>
-`firebase deploy`実行
+7. いったんビルド、デプロイ<br>
+    `npm run build`実行<br>
+    `firebase deploy`実行
 
 ## 注意
 `npx create-react-app`は最新版をインストールするため注意。react17はjsx記法だけならimport Reactが不要だったり、typescriptが追いついていなく、tsconfig.jsonの設定が勝手に書き換わったりする。
-<br>
+<br><br>
 functionsフォルダにもtsconfig.jsonがある
 
 
@@ -68,6 +68,6 @@ package.jsonとfunctions/eslintrc.jsに対して以下を追記
   "root": true
   ```
 
-- fireabse deploy後tscでいっぱいエラーが出る
+- fireabse deploy後tscでいっぱいエラーが出る<br>
 tscのオプションに`--skipLibCheck`を付加<br>
 tsconfig.jsonに`"skipLibCheck": true`を追記
