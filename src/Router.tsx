@@ -2,6 +2,7 @@ import React from 'react'
 import { Switch, Route } from 'react-router'
 // tepmlateファイルはページごとにつくる
 // 各ページの親コンポーネントが配置される
+//
 import { Login, Home } from './templates'
 
 const Router = () => {

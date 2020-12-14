@@ -1,6 +1,5 @@
 const initialState = {
   users: {
-    icon: '',
     isSignedIn: false,
     uid: '',
     userName: '',

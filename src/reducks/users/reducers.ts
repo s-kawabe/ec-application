@@ -1,10 +1,12 @@
 import * as Actions from './actions'
 import initialState from '../store/initialState'
+import { UserActionsFormat } from './types'
 
 export const UsersReducer = (
   state: any = initialState.users,
-  action: Actions.UserActionsFormat,
+  action: UserActionsFormat,
 ) => {
+  console.log(action.type)
   switch (action.type) {
     case Actions.SIGN_IN:
       // spread parameter
@@ -18,7 +20,8 @@ export const UsersReducer = (
       return {
         ...initialState.users,
       }
+    // サインインした瞬間など以外でstateを更新しようとすると全部ここにくる
     default:
-      return false
+      return state
   }
 }

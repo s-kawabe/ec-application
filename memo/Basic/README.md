@@ -142,3 +142,42 @@ useDispatch: Store内のデータの書き換え<br>
 2. connected-react-router
     ReduxのStoreでルーティングを管理
     react-router v4 & v5 と互換性がある
+
+## 5 re-ducks patternを理解する
+- re-ducksパターンはディレクトリ構成の思想
+- テンプレートフォルダごとにそれぞれaction,reducers,selectorsなど
+  を一つずつ置いて管理する
+- Ducksパターンでは１つのファイルが肥大化しやすかった
+
+## 5.1 各ファイルの役割
+### 5.1.1 operations
+- 複雑な処理を任せられる
+- redux-thunkで非同期処理を制御する
+- Actionsを呼び出す
+- 本来はoperationsからActionsを呼び出す
+
+### 5.1.2 types★
+- TypeScriptで使用する
+- 型定義を記述してexportして使う
+  ```typescript
+  export interface UserState {
+    icon: string;
+    isSignedIn: boolean;
+    uid: string;
+    username: string;
+  }
+  ```
+
+### 5.1.3 selectors
+- Storeで管理しているstateを参照する関数
+- reselectというnpmモジュールを使用する
+    ```ts
+    // stateの中から自分が使いたいstateを抽出できる
+    import { createSelector } from "reselect"
+
+    const usersSelector = (state) => state.users;
+    const getUserId = createSelector(
+      [userSelector],
+      state => state.uid
+    )
+    ```
