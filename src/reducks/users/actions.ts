@@ -1,10 +1,7 @@
 import { UserActionsFormat } from './types'
 
 export const SIGN_IN: string = 'SIGN_IN'
-export const signInAction = (userState: {
-  uid: string
-  userName: string
-}): UserActionsFormat => {
+export const signInAction = (userState: any): UserActionsFormat => {
   return {
     type: 'SIGN_IN',
     payload: {

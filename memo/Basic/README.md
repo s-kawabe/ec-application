@@ -181,3 +181,63 @@ useDispatch: Store内のデータの書き換え<br>
       state => state.uid
     )
     ```
+
+# 6 redux-thunkで非同期処理を制御する
+- redux-thunkライブラリを使用することでredux内で非同期処理を待つことができる<br>
+→DBへの接続の際など。
+- 通常のActionsはaction objectを受け取る<br>
+→関数を受け取ることができない<br>
+→async/awaitやPromiseを使用することができない
+- **redux-thunkはstoreに導入する**
+- **redux-thunkはMiddleware**
+
+## 6.2 redux-thunkをかく
+store.ts
+```ts
+//  ①import
+import thunk from 'redux-thunk'
+// 中略
+export  default function createStore(history) {
+  retudn reduxCreateStore(
+    coombineReducers({
+      // 中略
+    }),
+    applyMiddleware(
+      routerMiddleware(history),
+      // applyMiddlewareに追加
+      thunk
+    )
+  )
+}
+```
+
+operations.ts
+```ts
+export const signIn = (email: string, password: string) => {
+  return async (dispatch: any, getState: any) => {
+    // 現在のStoreの状態を取得
+    const state = getState();
+    // Storeのusersがサインインしているかどうか
+    const isSignedIn: boolean = state.users.isSignedIn;
+
+    if(!isSignedIn) {
+                            // emailSignInの実行完了を待つ
+      const userData = await emailSignIn(email, password);
+      // signInActionがDispatch → ActionsがReducersにデータを渡す
+      // → ReducersはそのデータでStoreを更新する
+      dispatch(signInAction({
+        isSignedIn: true,
+        uid: '00001',
+        username: 'shintaro',
+      }))
+    }
+  }
+}
+```
+
+# 7 コンテナの役割(Storeと接続された**コンテナコンポーネント**を作る)
+- Redux Hooksでは使用しない
+- Storeとコンポーネントの中継役<br>
+  (StoreからState,Dispatchが送られてきてConnectで**フィルタリング**してコンポーネントに渡す)
+- ReduxとReactをつなぐ
+- StoreからDispatchする関数(Actions)をコンポーネントに渡す
