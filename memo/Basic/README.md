@@ -198,7 +198,7 @@ store.ts
 import thunk from 'redux-thunk'
 // 中略
 export  default function createStore(history) {
-  retudn reduxCreateStore(
+  return reduxCreateStore(
     coombineReducers({
       // 中略
     }),
@@ -221,7 +221,7 @@ export const signIn = (email: string, password: string) => {
     const isSignedIn: boolean = state.users.isSignedIn;
 
     if(!isSignedIn) {
-                            // emailSignInの実行完了を待つ
+      // emailSignInの実行完了を待つ
       const userData = await emailSignIn(email, password);
       // signInActionがDispatch → ActionsがReducersにデータを渡す
       // → ReducersはそのデータでStoreを更新する

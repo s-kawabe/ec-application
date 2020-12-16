@@ -1,6 +1,7 @@
 import { signInAction } from './actions'
 // ログイン時のpushはoperationsにまとめる
 import { push } from 'connected-react-router'
+import { auth } from '../../firebase/index'
 
 export const signIn = () => {
   return async (dispatch: any, getState: Function) => {
@@ -15,8 +16,6 @@ export const signIn = () => {
         .catch(() => null)
       const username = response.login
 
-      console.log('from gitub get by :', username)
-
       // stateを更新
       dispatch(
         signInAction({
@@ -28,5 +27,34 @@ export const signIn = () => {
       // rootにリダイレクト
       dispatch(push('/'))
     }
+  }
+}
+
+// redux-thunkで作るサインアップメソッド
+export const signUp = (
+  username: string,
+  email: string,
+  password: string,
+  confirmPassword: string,
+) => {
+  return async (dispatch: any) => {
+    // バリデーションを定義
+    if (
+      username === '' ||
+      email === '' ||
+      password === '' ||
+      confirmPassword === ''
+    ) {
+      alert('未入力の必須入力項目があります')
+      return false
+    }
+
+    if (password !== confirmPassword) {
+      alert('パスワードが一致しません。もう一度お試しください。')
+      return false
+    }
+
+    // firebaseのauthでサインアップ処理実行
+    return auth.createUserWithEmailAndPassword(email, password)
   }
 }

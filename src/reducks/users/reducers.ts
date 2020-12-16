@@ -6,7 +6,6 @@ export const UsersReducer = (
   state: any = initialState.users,
   action: UserActionsFormat,
 ) => {
-  console.log(action.type)
   switch (action.type) {
     case Actions.SIGN_IN:
       // spread parameter

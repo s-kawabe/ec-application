@@ -5,7 +5,6 @@ import { signIn } from '../reducks/users/operations'
 const Login = () => {
   const dispatch = useDispatch()
 
-  // console.log(dispatch(signInAction({uid: "000001", username: "shintaro"})));
   return (
     <div>
       <h2>ログイン</h2>
