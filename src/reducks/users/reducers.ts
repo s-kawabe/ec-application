@@ -1,11 +1,7 @@
 import * as Actions from './actions'
 import initialState from '../store/initialState'
-import { UserActionsFormat } from './types'
 
-export const UsersReducer = (
-  state: any = initialState.users,
-  action: UserActionsFormat,
-) => {
+export const UsersReducer = (state = initialState.users, action: any) => {
   switch (action.type) {
     case Actions.SIGN_IN:
       // spread parameter
