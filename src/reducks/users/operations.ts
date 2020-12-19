@@ -1,7 +1,46 @@
+// operationsには基本的にredux-thunkの関数を定義しておく
+
 // ログイン時のpushはoperationsにまとめる
 import { push } from 'connected-react-router'
 import { auth, db, FirebaseTimestamp } from '../../firebase/index'
-import { signInAction } from './actions'
+import { signInAction, signOutAction } from './actions'
+
+// 認証状態を監視して変化があったときにアクションを起こす
+export const listenAuthState = () => {
+  return async (dispatch: any) => {
+    return auth.onAuthStateChanged((user) => {
+      if (user) {
+        // ユーザが存在する→認証状態なのでDBからデータをとってくる！
+        const uid = user.uid
+
+        // 指定されたuidのデータをfirestoreから取得
+        db.collection('users')
+          .doc(uid)
+          .get()
+          .then((snapshot) => {
+            const data = snapshot.data()
+
+            if (data) {
+              dispatch(
+                signInAction({
+                  isSignedIn: true,
+                  role: data.role,
+                  uid: uid,
+                  username: data.username,
+                }),
+              )
+            }
+
+            // dispatch(push('/'));
+            return
+          })
+      } else {
+        // ユーザが存在しない→ログインしていないのでログインしてね！
+        dispatch(push('/signin'))
+      }
+    })
+  }
+}
 
 export const signIn = (email: string, password: string) => {
   return async (dispatch: any) => {
@@ -45,7 +84,6 @@ export const signIn = (email: string, password: string) => {
   }
 }
 
-// redux-thunkで作るサインアップメソッド
 export const signUp = (
   username: string,
   email: string,
@@ -100,5 +138,37 @@ export const signUp = (
             })
         }
       })
+  }
+}
+
+export const signOut = () => {
+  return async (dispatch: any) => {
+    auth.signOut().then(() => {
+      // サインアウトの際reduxのstoreを初期化する
+      dispatch(signOutAction())
+      dispatch(push('/signin'))
+    })
+  }
+}
+
+export const resetPassword = (email: string) => {
+  return async (dispatch: any) => {
+    if (email === '') {
+      alert('メールアドレスを入力してください')
+      return false
+    } else {
+      auth
+        .sendPasswordResetEmail(email)
+        .then(() => {
+          alert('リセットパスワードをメールアドレスに送信しました。')
+          dispatch(push('/signin'))
+          return
+        })
+        .catch(() => {
+          alert('パスワード変更に失敗しました。')
+          return
+        })
+    }
+    return
   }
 }

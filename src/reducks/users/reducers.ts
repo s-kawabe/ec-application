@@ -13,7 +13,7 @@ export const UsersReducer = (state = initialState.users, action: any) => {
       }
     case Actions.SIGN_OUT:
       return {
-        ...initialState.users,
+        ...action.payload,
       }
     // サインインした瞬間など以外でstateを更新しようとすると全部ここにくる
     default:

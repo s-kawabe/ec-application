@@ -1,6 +1,7 @@
+import { push } from 'connected-react-router'
 import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { TextInput, PrimaryButton } from '../component/UIkit'
+import { TextInput, PrimaryButton } from '../components/UIkit'
 import { signUp } from '../reducks/users/operations'
 
 const SignUp = () => {
@@ -96,6 +97,10 @@ const SignUp = () => {
           }
         />
       </div>
+      <div className="module-spacer--medium"></div>
+      <p onClick={() => dispatch(push('/signin'))}>
+        アカウントをお持ちの方はこちら
+      </p>
     </div>
   )
 }
