@@ -4,11 +4,13 @@ import { db, FirebaseTimestamp } from '../../firebase/index'
 const productsRef = db.collection('products')
 
 export const saveProduct = (
+  id: string,
   name: string,
   description: string,
   category: string,
   gender: string,
   price: string,
+  images: string[],
 ) => {
   return async (dispatch: any) => {
     const timestamp = FirebaseTimestamp.now()
@@ -21,24 +23,28 @@ export const saveProduct = (
       category: category,
       description: description,
       gender: gender,
+      images: images,
       name: name,
       price: parseInt(price, 10),
       updated_at: timestamp,
     }
 
-    const ref = productsRef.doc()
-    const id = ref.id
-    data.id = id
-    data.created_at = timestamp
+    // 新規登録ページの時のみ
+    if (id === '') {
+      const ref = productsRef.doc()
+      const id = ref.id
+      data.id = id
+      data.created_at = timestamp
+    }
 
     return productsRef
       .doc(id)
-      .set(data)
+      .set(data, { merge: true }) /* 更新部分を適用する */
       .then(() => {
         dispatch(push('/'))
       })
       .catch((error) => {
-        throw Error(error)
+        throw new Error(error)
       })
   }
 }

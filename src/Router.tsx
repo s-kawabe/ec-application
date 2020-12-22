@@ -16,7 +16,9 @@ const Router = () => {
       {/* 認証が必要なページではAuthコンポーネントでラップする */}
       <Auth>
         <Route exact path={'(/)?'} component={Home} />
-        <Route exact path={'(/product/edit)'} component={ProductEdit} />
+        {/* 正規表現でedit/(:id)になっているURLは全てProductEditテンプレートを表示 */}
+        {/* idなし→新規登録ページ idあり→編集ページ */}
+        <Route path={'/product/edit(/:id)?'} component={ProductEdit} />
       </Auth>
     </Switch>
   )
