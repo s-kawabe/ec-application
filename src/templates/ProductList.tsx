@@ -10,8 +10,6 @@ const ProductList = () => {
   const selector = useSelector((state) => state)
   const products = getProducts(selector)
 
-  console.log(products)
-
   useEffect(() => {
     dispatch(fetchProducts())
   }, [dispatch])
