@@ -1,11 +1,11 @@
-import React /*, {useCallback, useState} */ from 'react'
+import React, { useCallback, useState } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import { useDispatch, useSelector } from 'react-redux'
 import { getIsSignedIn } from '../../reducks/users/selector'
 import logo from '../../assets/img/icons/logo.png'
-import { HeaderMenu } from './index'
+import { HeaderMenu, ClosableDrawer } from './index'
 import { push } from 'connected-react-router'
 
 const useStyles = makeStyles(() =>
@@ -34,14 +34,25 @@ const Header = () => {
   const selector = useSelector((state) => state)
   const isSignedIn = getIsSignedIn(selector)
 
-  // const [sideBarOpen, setSideBarOpen] = useState(false);
+  const [sideBarOpen, setSideBarOpen] = useState<boolean>(false)
 
-  // const handleDrawerToggle = useCallback((event, isOpen) => {
-  //     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-  //         return;
-  //     }
-  //     setSideBarOpen(isOpen)
-  // }, [setSideBarOpen]);
+  // KeibordEventのGenericsを抽象的なものにする
+  const handleDrawerToggle = useCallback(
+    (
+      event:
+        | React.KeyboardEvent<HTMLInputElement>
+        | React.MouseEvent<HTMLElement>,
+      isOpen: boolean,
+    ) => {
+      if ('key' in event) {
+        if (event.key === 'Tab' || event.key === 'Shift') {
+          return
+        }
+      }
+      setSideBarOpen(isOpen)
+    },
+    [setSideBarOpen],
+  )
 
   return (
     <div className={classes.root}>
@@ -56,12 +67,12 @@ const Header = () => {
           />
           {isSignedIn && (
             <div className={classes.iconButtons}>
-              <HeaderMenu />
+              <HeaderMenu handleDrawerToggle={handleDrawerToggle} />
             </div>
           )}
         </Toolbar>
       </AppBar>
-      {/* <ClosableDrawer open={sideBarOpen} onClose={handleDrawerToggle} /> */}
+      <ClosableDrawer open={sideBarOpen} onClose={handleDrawerToggle} />
     </div>
   )
 }
