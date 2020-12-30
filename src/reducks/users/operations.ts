@@ -1,9 +1,38 @@
 // operationsには基本的にredux-thunkの関数を定義しておく
 
 // ログイン時のpushはoperationsにまとめる
+import firebase from 'firebase/app'
 import { push } from 'connected-react-router'
 import { auth, db, FirebaseTimestamp } from '../../firebase/index'
-import { signInAction, signOutAction } from './actions'
+import {
+  signInAction,
+  signOutAction,
+  fetchProductsInCartAction,
+} from './actions'
+import { TypeProduct } from './types'
+
+interface IAddedProduct {
+  added_at: firebase.firestore.Timestamp
+  description: string
+  gender: string
+  images: string[]
+  price: number
+  productId: string
+  quantity: number
+  size: string
+  cartId?: string
+}
+
+export const addProductToCart = (addedProduct: IAddedProduct) => {
+  return async (dispatch: any, getState: any) => {
+    const uid = getState().users.uid
+    // listen to users collection inner cart collection
+    const cartRef = db.collection('users').doc(uid).collection('cart').doc()
+    addedProduct['cartId'] = cartRef.id
+    await cartRef.set(addedProduct)
+    dispatch(push('/'))
+  }
+}
 
 // 認証状態を監視して変化があったときにアクションを起こす
 export const listenAuthState = () => {
@@ -170,5 +199,11 @@ export const resetPassword = (email: string) => {
         })
     }
     return
+  }
+}
+
+export const fetchProductsInCart = (products: TypeProduct[]) => {
+  return async (dispatch: any) => {
+    dispatch(fetchProductsInCartAction(products))
   }
 }
