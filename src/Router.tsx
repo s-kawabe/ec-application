@@ -9,6 +9,8 @@ import {
   ProductEdit,
   ProductList,
   ProductDetail,
+  CartList,
+  OrderConfirm,
 } from './templates'
 import Auth from './Auth'
 import './assets/reset.css'
@@ -27,6 +29,9 @@ const Router = () => {
         {/* idなし→新規登録ページ idあり→編集ページ */}
         <Route exact path={'/product/:id'} component={ProductDetail} />
         <Route path={'/product/edit(/:id)?'} component={ProductEdit} />
+
+        <Route exact path={'/cart'} component={CartList} />
+        <Route exact path={'/order/confirm'} component={OrderConfirm} />
       </Auth>
     </Switch>
   )

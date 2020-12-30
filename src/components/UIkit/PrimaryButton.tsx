@@ -6,11 +6,11 @@ import { makeStyles } from '@material-ui/styles'
 const useStyles = makeStyles({
   // buttonクラスのスタイル定義
   button: {
-    backGroundColor: '#4dd0c1',
+    backgroundColor: '#4dd0c1',
     color: '#000',
     fontSize: 16,
     height: 48,
-    magrinButtom: 16,
+    magrinBottom: 16,
     width: 256,
   },
 })

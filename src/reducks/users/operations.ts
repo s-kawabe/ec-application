@@ -15,6 +15,7 @@ interface IAddedProduct {
   added_at: firebase.firestore.Timestamp
   description: string
   gender: string
+  name: string
   images: string[]
   price: number
   productId: string
