@@ -20,20 +20,23 @@ export const deleteProduct = (id: string) => {
   }
 }
 
-export const fetchProducts = () => {
+// get gender and catedory arguments by URL query parameter
+export const fetchProducts = (gender: string, category: string) => {
   return async (dispatch: any) => {
     // updated_atキーを基準に降順に並び替える
-    productsRef
-      .orderBy('updated_at', 'desc')
-      .get()
-      .then((snapshots) => {
-        const productsList: any = []
-        snapshots.forEach((snapshot) => {
-          const product = snapshot.data()
-          productsList.push(product)
-        })
-        dispatch(fetchProductsAction(productsList))
+    // 条件がクエリパラメータに含まれていればwhere条件を指定(複合クエリも対応可能)
+    let query = productsRef.orderBy('updated_at', 'desc')
+    query = gender !== '' ? query.where('gender', '==', gender) : query
+    query = category !== '' ? query.where('category', '==', category) : query
+
+    query.get().then((snapshots) => {
+      const productsList: any = []
+      snapshots.forEach((snapshot) => {
+        const product = snapshot.data()
+        productsList.push(product)
       })
+      dispatch(fetchProductsAction(productsList))
+    })
   }
 }
 
@@ -112,7 +115,6 @@ export const orderProduct = (productsInCart: any, price: number) => {
             shipping_date: shippingDate,
             updated_at: timestamp,
           }
-          console.log(history)
           console.log(orderRef.set(history))
 
           orderRef.set(history)

@@ -1,5 +1,15 @@
 import { TypeProduct, TypeActionReturn } from './types'
 
+export const FETCH_ORDERS_HISTORY: string = 'FETCH_ORDERS_HISTORY'
+export const fetchOrdersHistoryAction = (
+  history: TypeProduct[],
+): TypeActionReturn => {
+  return {
+    type: 'FETCH_ORDERS_HISTORY',
+    payload: history,
+  }
+}
+
 export const FETCH_PRODUCTS_IN_CART: string = 'FETCH_PRODUCTS_IN_CART'
 export const fetchProductsInCartAction = (
   products: TypeProduct[],

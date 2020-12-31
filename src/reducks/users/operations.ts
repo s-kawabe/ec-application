@@ -8,6 +8,7 @@ import {
   signInAction,
   signOutAction,
   fetchProductsInCartAction,
+  fetchOrdersHistoryAction,
 } from './actions'
 import { TypeProduct } from './types'
 
@@ -206,5 +207,26 @@ export const resetPassword = (email: string) => {
 export const fetchProductsInCart = (products: TypeProduct[]) => {
   return async (dispatch: any) => {
     dispatch(fetchProductsInCartAction(products))
+  }
+}
+
+export const fetchOrdersHistory = () => {
+  return async (dispatch: any, getState: any) => {
+    const uid = getState().users.uid
+    const list: any[] = []
+
+    db.collection('users')
+      .doc(uid)
+      .collection('orders')
+      .orderBy('updated_at', 'desc')
+      .get()
+      .then((snapshots: any) => {
+        snapshots.forEach((snapshot: any) => {
+          const data = snapshot.data()
+          list.push(data)
+        })
+
+        dispatch(fetchOrdersHistoryAction(list))
+      })
   }
 }

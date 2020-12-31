@@ -18,7 +18,10 @@ const ProductEdit = () => {
   const [images, setImages] = useState([])
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState<string>('')
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  )
   const [gender, setGender] = useState('')
   const [price, setPrice] = useState('')
   const [sizes, setSizes] = useState([])
@@ -46,12 +49,6 @@ const ProductEdit = () => {
     [setPrice],
   )
 
-  const categories = [
-    { id: 'tops', name: 'トップス' },
-    { id: 'shirts', name: 'シャツ' },
-    { id: 'pants', name: 'パンツ' },
-  ]
-
   const genders = [
     { id: 'all', name: '全て' },
     { id: 'male', name: 'メンズ' },
@@ -77,7 +74,38 @@ const ProductEdit = () => {
           setSizes(data.sizes)
         })
     }
-  }, [id])
+  }, [])
+
+  // get product categories by firestore
+  useEffect(() => {
+    db.collection('categories')
+      .orderBy('order', 'asc')
+      .get()
+      .then((snapshots) => {
+        const list: any[] = []
+        snapshots.forEach((snapshot) => {
+          const data = snapshot.data()
+          list.push({
+            id: data.id,
+            name: data.name,
+          })
+        })
+        setCategories(list)
+      })
+  }, [])
+  //   useEffect(() => {
+  //     db.collection('categories').orderBy("order", "asc").get().then(snapshots => {
+  //         const list: any[] = []
+  //         snapshots.forEach(snapshot => {
+  //             const data = snapshot.data()
+  //             list.push({
+  //               id: data.id,
+  //               name: data.name
+  //             })
+  //         })
+  //         setCategories(list)
+  //     });
+  // },[])
 
   return (
     <section>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
@@ -16,6 +16,7 @@ import { TextInput } from '../UIkit'
 import { useDispatch } from 'react-redux'
 import { push } from 'connected-react-router'
 import { signOut } from 'reducks/users/operations'
+import { db } from '../../firebase/index'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -60,6 +61,17 @@ const ClosableDrawer: React.FC<TProps> = (props) => {
     [setKeyword],
   )
 
+  const [filters, setFileters] = useState([
+    { func: selectMenu, label: 'すべて', id: 'all', value: '/' },
+    { func: selectMenu, label: 'メンズ', id: 'male', value: '/?gender=male' },
+    {
+      func: selectMenu,
+      label: 'レディース',
+      id: 'female',
+      value: '/?gender=female',
+    },
+  ])
+
   const menus = [
     {
       func: selectMenu,
@@ -83,6 +95,25 @@ const ClosableDrawer: React.FC<TProps> = (props) => {
       value: '/user/mypage',
     },
   ]
+
+  useEffect(() => {
+    db.collection('categories')
+      .orderBy('order', 'asc')
+      .get()
+      .then((snapshots) => {
+        const list: any[] = []
+        snapshots.forEach((snapshot) => {
+          const category = snapshot.data()
+          list.push({
+            func: selectMenu,
+            label: category.name,
+            id: category.id,
+            value: `/?category=${category.id}`,
+          })
+        })
+        setFileters((prevState) => [...prevState, ...list])
+      })
+  }, [])
 
   return (
     <nav className={classes.drawer}>
@@ -129,6 +160,18 @@ const ClosableDrawer: React.FC<TProps> = (props) => {
               </ListItemIcon>
               <ListItemText primary={'Logout'} />
             </ListItem>
+          </List>
+          <Divider />
+          <List>
+            {filters.map((filter) => (
+              <ListItem
+                button
+                key={filter.id}
+                onClick={(e) => filter.func(e, filter.value)}
+              >
+                <ListItemText primary={filter.label} />
+              </ListItem>
+            ))}
           </List>
         </div>
       </Drawer>
