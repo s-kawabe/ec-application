@@ -54,6 +54,11 @@ const SignIn = () => {
           label={'ログイン'}
           onClick={() => dispatch(signIn(email, password))}
         />
+        <div className="module-spacer--medium"></div>
+        <PrimaryButton
+          label={'おためしログイン'}
+          onClick={() => dispatch(signIn('tesr@example.com', 'password'))}
+        />
       </div>
       <div className="module-spacer--medium"></div>
       <p onClick={() => dispatch(push('/signup'))}>
