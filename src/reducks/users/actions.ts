@@ -25,6 +25,7 @@ export const signInAction = (userState: any): TypeActionReturn => {
   return {
     type: 'SIGN_IN',
     payload: {
+      email: userState.email,
       isSignedIn: true,
       role: userState.role,
       uid: userState.uid,
@@ -43,5 +44,13 @@ export const signOutAction = (): TypeActionReturn => {
       uid: '',
       userName: '',
     },
+  }
+}
+
+export const UPDATE_USER_STATE: string = 'UPDATE_USER_STATE'
+export const updateUserStateAction = (userState: any): TypeActionReturn => {
+  return {
+    type: 'UPDATE_USER_STATE',
+    payload: userState,
   }
 }

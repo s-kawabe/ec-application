@@ -13,6 +13,7 @@ import {
   OrderConfirm,
   OrderHistory,
   UserMyPage,
+  CheckoutWrapper,
 } from './templates'
 import Auth from './Auth'
 import './assets/reset.css'
@@ -37,6 +38,7 @@ const Router = () => {
         <Route exact path={'/order/history'} component={OrderHistory} />
 
         <Route exact path={'/user/mypage'} component={UserMyPage} />
+        <Route exact path={'/user/payment/edit'} component={CheckoutWrapper} />
       </Auth>
     </Switch>
   )

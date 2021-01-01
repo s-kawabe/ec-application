@@ -25,6 +25,11 @@ export const UsersReducer = (state = initialState.users, action: any) => {
       return {
         ...action.payload,
       }
+    case Actions.UPDATE_USER_STATE:
+      return {
+        ...state,
+        ...action.payload,
+      }
     // サインインした瞬間など以外でstateを更新しようとすると全部ここにくる
     default:
       return state
