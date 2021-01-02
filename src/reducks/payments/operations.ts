@@ -30,7 +30,6 @@ const createCustomer = async (
   return JSON.parse(customerResponse.body)
 }
 
-//
 export const retrievePaymentMethod = async (paymentMethodId: string) => {
   const response = await fetch(BASE_URL + 'v1/paymentMethod', {
     method: 'POST',
@@ -47,6 +46,9 @@ export const retrievePaymentMethod = async (paymentMethodId: string) => {
   return paymentMethod.card
 }
 
+// カード情報の更新を押した際の処理
+// カード情報が未登録 → stripe.customers
+// カード情報が登録済みで更新する場合 → stripe.paymentMethods.detachとattach
 export const registerCard = (stripe: any, elements: any) => {
   return async (dispatch: any, getState: any) => {
     const user = getState().users

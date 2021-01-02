@@ -31,6 +31,8 @@ const PaymentEdit = () => {
 
   useEffect(() => {
     // 即時実行関数で非同期処理を行う
+    // Reduxに保存されたpaymentMethodIdを引数に
+    // stripe.paymentMethods.retrieveでカード情報を取得
     ;(async () => {
       const cardData = await retrievePaymentMethod(paymentMethodId)
       if (cardData) {
