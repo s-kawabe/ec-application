@@ -10,6 +10,27 @@ const sendResponse = (response: any, statusCode: any, body: any) => {
   })
 }
 
+exports.retrievePaymentMethod = functions.https.onRequest((req, res) => {
+  const corsHandler = cors({ origin: true })
+
+  corsHandler(req, res, () => {
+    // POSTメソッド以外ならエラー
+    if (req.method !== 'POST') {
+      sendResponse(res, 405, { error: 'Invalid Request method!' })
+    }
+
+    return stripe.paymentMethods
+      .retrieve(req.body.paymentMethodId)
+      .then((paymentMethod: any) => {
+        sendResponse(res, 200, paymentMethod)
+      })
+      .catch((error: any) => {
+        console.error(error)
+        sendResponse(res, 500, { error: error })
+      })
+  })
+})
+
 exports.stripeCustomer = functions.https.onRequest((req, res) => {
   const corsHandler = cors({ origin: true })
 
@@ -21,7 +42,8 @@ exports.stripeCustomer = functions.https.onRequest((req, res) => {
           description: 'Test customer',
           email: req.body.email,
           metadata: { userId: req.body.userId },
-          payment_method: req.body.paymentMethod,
+          payment_method:
+            req.body.paymentMethod /* ユーザが入力したカード情報 */,
         })
         .then((customer: any) => {
           sendResponse(res, 200, customer)

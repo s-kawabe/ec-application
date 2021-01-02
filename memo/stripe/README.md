@@ -174,6 +174,7 @@ const stripe = require('stripe')(functions.config().stripe.key)
 ```
 
 functionsフォルダ内のファイルを編集する
+index.tsにカード登録用のstripeCustomerAPIメソッドを追加する
 ```ts
 const stripe = require('stripe')(functions.config().stripe.key)
 const cors = require('cors')
@@ -303,11 +304,19 @@ export const registerCard = (stripe: any, elements: any) => {
 
 ### クレジットカードを登録してみる
 stripe公式の[テストカード情報](https://stripe.com/docs/testing)で
-実際にフォームに入力し登録されるか試してみましょう。
+実際にフォームに入力し登録されるか試しします。
+成功すればstripeのダッシュボードの顧客タブに
+先ほど送信したカード情報やemailの情報が登録されているはずです！
 
 
+## 登録済みクレジットカードを閲覧、編集する
+登録済みのカード情報の編集、閲覧ができるよう機能を追加していきます。
 
-## クレジットカードを編集する
+### CloudFunctionsにAPIを定義
+ndex.tsにカード情報取得用のAPIretrievePaymentMethodを定義する
+
+```ts
+```
 
 ## テスト決済をする
 

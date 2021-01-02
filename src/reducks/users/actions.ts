@@ -25,8 +25,10 @@ export const signInAction = (userState: any): TypeActionReturn => {
   return {
     type: 'SIGN_IN',
     payload: {
+      customer_id: userState.customer_id,
       email: userState.email,
       isSignedIn: true,
+      payment_method_id: userState.payment_method_id,
       role: userState.role,
       uid: userState.uid,
       userName: userState.username,

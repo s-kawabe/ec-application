@@ -9,7 +9,7 @@ const headers = new Headers()
 headers.set('Content-type', 'application/json')
 const BASE_URL = 'https://ec-application-4132d.web.app/'
 
-// APIのエンドポイントを指定
+// FunctionsのAPIを呼び出す用の関数(fetchメソッドでURLにPOSTリクエストを飛ばす)
 const createCustomer = async (
   email: string,
   paymentMethodId: string,
@@ -28,6 +28,23 @@ const createCustomer = async (
   // 返ってきたJSONをオブジェクトに変換して返す
   const customerResponse = await response.json()
   return JSON.parse(customerResponse.body)
+}
+
+//
+export const retrievePaymentMethod = async (paymentMethodId: string) => {
+  const response = await fetch(BASE_URL + 'v1/paymentMethod', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({
+      paymentMethodId: paymentMethodId,
+    }),
+  })
+
+  // 返ってきたJSONをオブジェクトに変換して返す
+  const paymentMethodResponse = await response.json()
+  console.log(paymentMethodResponse)
+  const paymentMethod = JSON.parse(paymentMethodResponse.body)
+  return paymentMethod.card
 }
 
 export const registerCard = (stripe: any, elements: any) => {
