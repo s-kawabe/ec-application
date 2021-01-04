@@ -1,4 +1,7 @@
 # React×TypeScriptでECサイトを作成する
+
+https://ec-application-4132d.web.app/
+
 [日本一わかりやすいReact-Redux入門](https://www.youtube.com/watch?v=FBMA34gUsgw&list=PLX8Rsrpnn3IWavNOj3n4Vypzwb3q1RXhr&index=1)
 こちらの講座をTypeScriptに置き換えて実装
 
