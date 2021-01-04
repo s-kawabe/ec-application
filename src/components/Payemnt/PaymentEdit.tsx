@@ -7,7 +7,7 @@ import {
   registerCard,
   retrievePaymentMethod,
 } from '../../reducks/payments/operations'
-import { getPaymentMethodId } from '../../reducks/users/selector'
+import { getPaymentMethodId, getCustomerId } from '../../reducks/users/selector'
 
 const PaymentEdit = () => {
   const dispatch = useDispatch()
@@ -15,15 +15,15 @@ const PaymentEdit = () => {
   // 親コンポーネント内のstripePromiseの戻り値を取得する
   const elements = useElements()
   const selector = useSelector((state) => state)
-  // const customerId = getCustomerId(selector)
+  const customerId = getCustomerId(selector)
   const paymentMethodId = getPaymentMethodId(selector)
 
   // ユーザのカード情報
   const [card, setCard] = useState<any>({})
 
   const register = useCallback(() => {
-    dispatch(registerCard(stripe, elements))
-  }, [stripe, elements])
+    dispatch(registerCard(stripe, elements, customerId))
+  }, [stripe, elements, customerId])
 
   const goBackToMyPage = useCallback(() => {
     dispatch(push('/user/mypage'))

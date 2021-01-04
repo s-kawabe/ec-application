@@ -46,10 +46,30 @@ export const retrievePaymentMethod = async (paymentMethodId: string) => {
   return paymentMethod.card
 }
 
+const updatePaymentMethod = async (
+  customerId: any,
+  prevPaymentMethodId: any,
+  nextPaymentMethodId: any,
+) => {
+  const response = await fetch(BASE_URL + 'v1/updatePaymentMethod', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({
+      customerId: customerId,
+      prevPaymentMethodId: prevPaymentMethodId,
+      nextPaymentMethodId: nextPaymentMethodId,
+    }),
+  })
+
+  const paymentMethodResponse = await response.json()
+  const paymentMethod = JSON.parse(paymentMethodResponse.body)
+  return paymentMethod.card
+}
+
 // カード情報の更新を押した際の処理
 // カード情報が未登録 → stripe.customers
 // カード情報が登録済みで更新する場合 → stripe.paymentMethods.detachとattach
-export const registerCard = (stripe: any, elements: any) => {
+export const registerCard = (stripe: any, elements: any, customerId: any) => {
   return async (dispatch: any, getState: any) => {
     const user = getState().users
     const email = user.email
@@ -76,29 +96,62 @@ export const registerCard = (stripe: any, elements: any) => {
       return
     }
 
+    // 新しいカード情報
     const paymentMethodId = paymentMethod.id
-    const customerData = await createCustomer(email, paymentMethodId, uid)
 
-    if (customerData.id === '') {
-      alert('カード情報の登録に失敗しました。')
-      return
-    } else {
-      const updateUserState = {
-        customer_id: customerData.id,
-        payment_method_id: paymentMethodId,
+    // カード情報新規登録の場合
+    if (customerId === '') {
+      const customerData = await createCustomer(email, paymentMethodId, uid)
+
+      if (customerData.id === '') {
+        alert('カード情報の登録に失敗しました。')
+        return
+      } else {
+        const updateUserState = {
+          customer_id: customerData.id,
+          payment_method_id: paymentMethodId,
+        }
+
+        db.collection('users')
+          .doc(uid)
+          .update(updateUserState)
+          .then(() => {
+            dispatch(updateUserStateAction(updateUserState))
+            dispatch(push('/user/mypage'))
+          })
+          .catch(() => {
+            alert('カード情報の登録に失敗しました。')
+            return
+          })
       }
+      // カード情報更新の場合
+    } else {
+      // redux経由で現在のpaymentmethodIdを取得する
+      const prevPaymentMethodId = getState().users.payment_method_id
+      const updatedPaymentMethod = await updatePaymentMethod(
+        customerId,
+        prevPaymentMethodId,
+        paymentMethodId,
+      )
 
-      db.collection('users')
-        .doc(uid)
-        .update(updateUserState)
-        .then(() => {
-          dispatch(updateUserStateAction(updateUserState))
-          dispatch(push('/user/mypage'))
-        })
-        .catch(() => {
-          alert('カード情報の登録に失敗しました。')
-          return
-        })
+      if (!updatedPaymentMethod) {
+        alert('お客様情報の登録に失敗しました。')
+      } else {
+        const userState = {
+          payment_method_id: paymentMethodId,
+        }
+        db.collection('users')
+          .doc(uid)
+          .update(userState)
+          .then(() => {
+            dispatch(updateUserStateAction(userState))
+            alert('お客様情報を更新しました。')
+            dispatch(push('/user/mypage'))
+          })
+          .catch(() => {
+            alert('お客様情報の更新に失敗しました。')
+          })
+      }
     }
   }
 }

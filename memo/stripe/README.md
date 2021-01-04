@@ -313,10 +313,71 @@ stripe公式の[テストカード情報](https://stripe.com/docs/testing)で
 登録済みのカード情報の編集、閲覧ができるよう機能を追加していきます。
 
 ### CloudFunctionsにAPIを定義
-ndex.tsにカード情報取得用のAPIretrievePaymentMethodを定義する
+index.tsにカード情報取得用のAPIretrievePaymentMethodを定義する
 
 ```ts
+exports.retrievePaymentMethod = functions.https.onRequest((req, res) => {
+  const corsHandler = cors({ origin: true })
+
+  corsHandler(req, res, () => {
+    // POSTメソッド以外ならエラー
+    if (req.method !== 'POST') {
+      sendResponse(res, 405, { error: 'Invalid Request method!' })
+    }
+
+    return stripe.paymentMethods
+      .retrieve(req.body.paymentMethodId)
+      .then((paymentMethod: any) => {
+        sendResponse(res, 200, paymentMethod)
+      })
+      .catch((error: any) => {
+        console.error(error)
+        sendResponse(res, 500, { error: error })
+      })
+  })
+})
 ```
+stripe.paymentMethods.retrieveのthenに対する引数paymentMethodに
+カード情報が格納されています。
+firebase.json側にエンドポイントと、このAPIへの導線を指定して
+あとはAP側でfirebase.jsonに指定したエンドポイントにリクエストを投げるだけです。
+
+### カード情報を編集する
+stripeのattachとdetachというAPIを使用します。
+
+```ts
+exports.updatePaymentMethod = functions.https.onRequest((req, res) => {
+  const corsHandler = cors({ origin: true })
+
+  corsHandler(req, res, () => {
+    //POSTメソッドでなければ405で返す
+    if (req.method !== 'POST') {
+      sendResponse(res, 405, { error: 'Invalid Request method!' })
+    }
+
+    return stripe.paymentMehods
+      .detach(req.body.prevPaymentMethodId)
+      .then((paymentMethod: any) => {
+        return stripe.paymentMethods
+          .attach(req.body.nextPaymentMethodId, {
+            customer: req.body.customerId,
+          })
+          .then((nextPaymentMethod: any) => {
+            sendResponse(res, 200, nextPaymentMethod)
+          })
+      })
+      .catch((error: any) => {
+        sendResponse(res, 500, { error: error })
+      })
+  })
+})
+```
+
+AP側で、ログインユーザのカード情報が既に登録済みならdettachとatach、
+未登録ならcustomer.createを呼ぶように制御すればOKです。
+
+
+
 
 ## テスト決済をする
 

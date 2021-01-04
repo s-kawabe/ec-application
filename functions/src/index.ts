@@ -65,9 +65,9 @@ exports.updatePaymentMethod = functions.https.onRequest((req, res) => {
       sendResponse(res, 405, { error: 'Invalid Request method!' })
     }
 
-    return stripe.paymentMehod
+    return stripe.paymentMethods
       .detach(req.body.prevPaymentMethodId)
-      .then(() => {
+      .then((paymentMethod: any) => {
         return stripe.paymentMethods
           .attach(req.body.nextPaymentMethodId, {
             customer: req.body.customerId,
