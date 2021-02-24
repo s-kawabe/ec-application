@@ -8,8 +8,9 @@ https://ec-application-4132d.web.app/
 ## 事前準備
 1. `npx creat-react-app [プロジェクト名] --template typescript`
 2. firebaseプロジェクト作成
-3. reactのディレクトリから`firebase login`(過去にログインしている場合は必要なかった)
-4. `firebase init`
+3. `yarn add firebase firebase-tools`
+4. reactのディレクトリから`firebase login`(過去にログインしている場合は必要なかった)
+5. `firebase init`
 - 使用するサービスを選択(Firestore,Functions,Hosting,Strage)
 - Firestore.rulesとFirestore.indexesはデフォルト
 - use to write Cloud Functions? → **TypeScript**
@@ -18,7 +19,7 @@ https://ec-application-4132d.web.app/
 - single-page appz? → **y**
 - automatic builds and deploys with GitHub? → n
 - What file should used for Strage Rules? → デフォルト
-5. [こちらのサイト](https://qiita.com/sunnyG/items/05c2e9381d6ba2d9fccf)でprettierとかtsconfig.jsonの設定をした
+6. [こちらのサイト](https://qiita.com/sunnyG/items/05c2e9381d6ba2d9fccf)でprettierとかtsconfig.jsonの設定をした
 - lint-staged<br>
   拡張子が`ts`または`tsx`の場合に`prettier`を走らせてから`git add`する設定を`package.json`に追記
   ```json
